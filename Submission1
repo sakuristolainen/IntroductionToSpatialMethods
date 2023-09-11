@@ -6,7 +6,7 @@ laserdata=read_laserdata();
 
 %open image
 image=imread('test_image_gray.tif');
-imsize=size(image) %image dimensions (rows, columns)
+imsize=size(image); %image dimensions (rows, columns)
 
 %visualizing original image
 figure(1)
@@ -34,8 +34,11 @@ y_laserdata = laserdata(:,[2]);
 minimum_x = min(x_laserdata);
 minimum_y = min(y_laserdata);
 
-pixels_columns=???;
-pixels_rows=???;
+maximum_x = max(x_laserdata);
+maximum_y = max(y_laserdata);
+
+pixels_columns=round(maximum_x - minimum_x) / grid_size;
+pixels_rows=round(maximum_y - minimum_y) / grid_size;
 
 
 orthophoto=zeros(pixels_rows, pixels_columns); %initializing final ortho image (gray-level: RGB should be ortho_image=zeros(pixels_rows, pixels_columns, 3);
@@ -49,7 +52,7 @@ DEM=zeros(pixels_rows, pixels_columns); %initializing digital elevation model
 %start_y=5267;
 %when you have a functional code replace this with minimum x value and
 %maximum y value (think about the directions of coordinate axes in reality and in digital ortho image)
-start_x=mimimum_x;
+start_x=minimum_x;
 start_y=maximum_y;
 
 % Create a KD-tree for faster search of neighbors 
@@ -164,15 +167,15 @@ function [interpolated_height]=inverse_distance_weighting_interpolation(X,Y,clos
     end  
         IDW = IDW + wiu / wj;
  
-    interpolated_height = IDW
+    interpolated_height = IDW;
 end
 
 function [x_camera, y_camera]=collinearity_equations(X, Y, Z, c, X0, Y0, Z0, R)
     %todo: write code for collinearity equations according to equation 3 in the
     %assignment instructions
     
-    x_camera = -c*(R(1,1)*(X-X0)+R(1,2)*(Y-Y0)+R(1,3)*(Z-Z0))/(R(3,1)*(X-X0)+R(3,2)*(Y-Y0)+R(3,3)*(Z-Z0))
-    y_camera = -c*(R(2,1)*(X-X0)+R(2,2)*(Y-Y0)+R(2,3)*(Z-Z0))/(R(3,1)*(X-X0)+R(3,2)*(Y-Y0)+R(3,3)*(Z-Z0))
+    x_camera = -c*(R(1,1)*(X-X0)+R(1,2)*(Y-Y0)+R(1,3)*(Z-Z0))/(R(3,1)*(X-X0)+R(3,2)*(Y-Y0)+R(3,3)*(Z-Z0));
+    y_camera = -c*(R(2,1)*(X-X0)+R(2,2)*(Y-Y0)+R(2,3)*(Z-Z0))/(R(3,1)*(X-X0)+R(3,2)*(Y-Y0)+R(3,3)*(Z-Z0));
     
 end
 
@@ -180,8 +183,8 @@ function [row,column]=camera_coordinates2image_coordinates(x_camera, y_camera, p
    %todo: write code for transformation according to equation 4 in the
     %assignment instructions
     
-    column = x_camera + pp_x
-    row = y_camera - pp_y
+    column = x_camera + pp_x;
+    row = y_camera - pp_y;
     
     
 end
@@ -191,7 +194,7 @@ function [interpolated_color]=bilinear_interpolation(x_image, y_image, color1, c
     %todo: write code for bilinear interpolation according to equation 5 in the
     %assignment instructions
     
-    interpolated_color=round((1-x_image)*(1-y_image)*color1+x_image*(1-y_image)*color2+(1-x_image)*y_image*color3+x_image*y_image*color4)
+    interpolated_color=round((1-x_image)*(1-y_image)*color1+x_image*(1-y_image)*color2+(1-x_image)*y_image*color3+x_image*y_image*color4);
     
 end
 
