@@ -194,7 +194,11 @@ function [interpolated_color]=bilinear_interpolation(x_image, y_image, color1, c
     %todo: write code for bilinear interpolation according to equation 5 in the
     %assignment instructions
     
-    interpolated_color=round((1-x_image)*(1-y_image)*color1+x_image*(1-y_image)*color2+(1-x_image)*y_image*color3+x_image*y_image*color4);
+    x = x_image - round(x_image);
+    y = y_image - round(y_image);
+    
+    %interpolated_color = round((1-x)*(1-y)*color1+x*(1-y)*color2+(1-x)*y*color3+x*y*color4)
+    interpolated_color = round((color1*(1-x)+color2*x)*(1-y)+(color3*(1-x)+color4*x)*y);
     
 end
 
