@@ -184,7 +184,7 @@ function [row,column]=camera_coordinates2image_coordinates(x_camera, y_camera, p
     %assignment instructions
     
     column = x_camera + pp_x;
-    row = y_camera - pp_y;
+    row = pp_y - y_camera;
     
     
 end
@@ -194,11 +194,11 @@ function [interpolated_color]=bilinear_interpolation(x_image, y_image, color1, c
     %todo: write code for bilinear interpolation according to equation 5 in the
     %assignment instructions
     
-    x = x_image - round(x_image);
-    y = y_image - round(y_image);
+    x = x_image - fix(x_image);
+    y = y_image - fix(y_image);
     
     %interpolated_color = round((1-x)*(1-y)*color1+x*(1-y)*color2+(1-x)*y*color3+x*y*color4)
-    interpolated_color = round((color1*(1-x)+color2*x)*(1-y)+(color3*(1-x)+color4*x)*y);
+    interpolated_color = fix((color1*(1-x)+color2*x)*(1-y)+(color3*(1-x)+color4*x)*y);
     
 end
 
