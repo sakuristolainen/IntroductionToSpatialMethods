@@ -1,0 +1,93 @@
+library(rgdal)
+
+municipals <- readOGR("C:/Users/Documents/koulu/Introduction to Spatial Methods/Assignment2/Municapilities/Municipals_Finland2.shp", encoding="UTF-8")
+
+plot(municipals)
+
+print(municipals$KUNTANIMI) 
+
+print(municipals$KUNTANUMER)
+
+print(data.frame(municipals$KUNTANUMER, municipals$KUNTANIMI)) 
+
+selection <- c("Helsinki", "Vantaa")
+
+print(selection)
+
+selected_municipals <- municipals[municipals$KUNTANIMI %in% selection, ]
+
+plot(selected_municipals)
+
+selected_municipals$COLOR[1] <- "#1d862d"
+
+selected_municipals$COLOR[2] <- "#861d1d"
+
+plot(selected_municipals, col= selected_municipals$COLOR)
+
+# 1. result
+
+selection2 <- c("Hyvinkaa", "Vihti", "Nurmijarvi", 
+"Tuusula", "Vantaa", "Helsinki", "Sipoo", "Kerava", "Jarvenpaa", "Pornainen", "Mantsala")
+
+selected_municipals2 <- municipals[municipals$KUNTANIMI %in% selection2, ]
+
+selected_municipals2$COLOR <- "#bababa"
+
+selected_municipals2$COLOR[8] <- "#861d1d"
+
+plot(selected_municipals2, col= selected_municipals2$COLOR)
+
+# 2. result
+
+library(spdep)
+
+set.ZeroPolicyOption(TRUE)
+
+municipals_nb <- poly2nb(selected_municipals2, queen=FALSE)
+
+str(municipals_nb)
+
+plot(municipals_nb,coordinates(selected_municipals2), col="grey")
+
+# 3. result
+
+coordinates(selected_municipals2)
+
+municipals_adj <- nb2mat(municipals_nb, style="B")
+
+#municipals_adj <- nb2mat(municipals_nb)
+
+#plot(municipals_adj)
+
+print(municipals_adj)
+
+# 4. result
+
+crime_rates <- c(47.6, 60.9, 44.6, 43.8, 61.4, 29.7, 126, 116.3, 75.5, 69.1, 76)
+
+selected_municipals2$CRIME <- crime_rates
+
+mymap_w <- nb2listw(municipals_nb)
+
+mI_norm <- moran.test(selected_municipals2$CRIME, mymap_w, randomisation=TRUE)
+
+print(mI_norm)
+
+# 5. result
+
+municipal_centers <- coordinates(selected_municipals2)
+
+mean_center_x <- mean(municipal_centers [, 1])
+
+mean_center_y <- mean(municipal_centers [, 2])
+
+plot(selected_municipals2)
+
+points(mean_center_x, mean_center_y, col="red", pch=16)
+
+weighted_mean_x <- weighted.mean(municipal_centers[, 1], selected_municipals2$CRIME)
+
+weighted_mean_y <- weighted.mean(municipal_centers[, 2], selected_municipals2$CRIME)
+
+points(weighted_mean_x, weighted_mean_y, col="blue", pch=16)
+  
