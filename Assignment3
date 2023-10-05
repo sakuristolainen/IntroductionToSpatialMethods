@@ -1,0 +1,230 @@
+print_results <- function(classified_data) {
+  #prints final results by the class
+  #no need to modify
+  #call: print_results(data_to_be_printed)
+  print(classified_data[classified_data[, 4] == "1", ])
+  print(classified_data[classified_data[, 4] == "2", ])
+  print(classified_data[classified_data[, 4] == "3", ])
+}
+
+visualize_classification<-function(classification_data) {
+  #visualizes classification with the scatter plot and colors
+  #no need to modify
+  
+  f1 = as.numeric(classification_data$population_density_people_per_square_km) # first entity of feature vector
+  f2 = as.numeric(classification_data$Internet_users_per_100_people) # second entity of feature vector
+
+  
+  plot(f1, f2, col = "red",main = "kmeans classification results")
+  
+  class1 <- classification_data[classification_data[, 4] == "1", ]
+  
+  f1 <- as.numeric(class1$population_density_people_per_square_km)
+  f2 <- as.numeric(class1$Internet_users_per_100_people)
+  
+  points(f1, f2, col = "violet", lwd = 3)
+
+  class2 <- classification_data[classification_data[, 4] == "2", ]
+
+  f1 <- as.numeric(class2$population_density_people_per_square_km)
+  f2 <- as.numeric(class2$Internet_users_per_100_people)
+
+  points(f1,f2, col = "green", lwd = 3)
+  
+  class3 <- classification_data[classification_data[, 4] == "3", ]
+  f1 <- as.numeric(class3$population_density_people_per_square_km)
+  f2 <- as.numeric(class3$Internet_users_per_100_people)
+  points(f1, f2, col = "blue", lwd = 3)
+
+  return(1)
+}
+
+visualize_classification_and_mean_vectors <- function(classification_data, f_class1, f_class2, f_class3) {
+  #visualize the current classification results and mean feature vectors
+  #no need to modify
+  #call: visualize_classification_and_mean_vectors(data_to_be_vizualized, mean_feature_vector_of_class1, mean_feature_vector_of_class2, mean_feature_vector_of_class3)
+  
+  print("New visualization done")
+
+  f1 <- as.numeric(classification_data$population_density_people_per_square_km)
+  f2 <- as.numeric(classification_data$Internet_users_per_100_people)
+  
+  plot(f1, f2, col = "gray", main = "kmeans iteration")
+  class1 <- classification_data[classification_data[, 4] == "1", ]
+  
+  f1 <- as.numeric(class1$population_density_people_per_square_km)
+  f2 <- as.numeric(class1$Internet_users_per_100_people)
+
+  points(f1, f2,col = "violet")
+
+  class2 <- classification_data[classification_data[, 4]=="2", ]
+  f1 <- as.numeric(class2$population_density_people_per_square_km)
+  f2 <- as.numeric(class2$Internet_users_per_100_people)
+  
+  points(f1, f2, col = "green")
+  
+  class3 <- classification_data[classification_data[, 4] == "3", ]
+
+  f1 <- as.numeric(class3$population_density_people_per_square_km)
+  f2 <- as.numeric(class3$Internet_users_per_100_people)
+  points(f1, f2, col = "blue")
+
+  points(f_class1[1], f_class1[2], col = "violet", cex = 2, lwd = 3)
+  points(f_class2[1], f_class2[2], col = "green", cex = 2, lwd = 3)
+  points(f_class3[1], f_class3[2], col = "blue", cex = 2, lwd = 3)
+  
+  return(1)
+}
+
+readData <- function() {
+  #reads data
+  #some modifications are needed
+  
+  #todo: change path to correspond your system 
+  #and read data from Data_Extract_From_Jobs2.csv
+  #European format of csv -> must use read.csv2() otherwise read.csv()
+  data <- read.csv2("C:/Users/Documents/koulu/Introduction to Spatial Methods/Assignment3/Test_Data.csv")
+
+  return(data)
+}
+
+
+kmeans <- function() {
+  #major modifications are needed  
+  #function call: kmeans()
+  
+  #read data
+  data <- readData()
+  
+  #size of data
+  size <- dim(data)
+
+  #create empty column for classification
+  classification_column <- matrix(nrow = size[1], ncol = 1);
+
+  #combine data and class column
+  classification_data <- cbind(data, classification_column)
+
+  #crates new matrix for numeric computations
+  numeric_data <- matrix( nrow = size[1], ncol = 2) #change into numeric data and keeping identical column indexing with feature_data
+
+  #adding data
+  numeric_data <- data[1:size[1], 2:3]
+  
+  #change data type as numeric
+  numeric_data <- apply(numeric_data, 2, as.numeric)
+  
+  #normalization factors
+  normalize1 <- max(numeric_data[, 1])
+  normalize2 <- max(numeric_data[, 2])
+
+  #denormalization factor for better visualization
+  denormalize<-c(normalize1, normalize2)
+  
+  #normalize data
+  numeric_data[, 1] <- numeric_data[, 1]/normalize1
+  numeric_data[, 2] <- numeric_data[, 2]/normalize2
+
+  #todo:
+  #select initial values for all three feature vectors of class centers (three classes)
+  #use minimum, maximum and average values of data
+  #create separate vectors for each feature vector (mim/max_average of feature1, mim/max_average of feature2)
+  
+  feature_vector1 <- c(min(numeric_data[,1]), min(numeric_data[,2]))
+  feature_vector2 <- c(max(numeric_data[,1]), max(numeric_data[,2]))
+  feature_vector3 <- c(mean(numeric_data[,1]), mean(numeric_data[,2]))
+  
+  
+  #visualize denormalzed initial feature vectors of class centers  
+  visualize_classification_and_mean_vectors(classification_data, class1 * denormalize, class2 * denormalize, class3 * denormalize)
+  
+  #stop executing until enter is pressed
+  cat ("Press [enter] to continue")
+  line <- readline()
+  
+  
+  #store initials for previous round, ensure that there'll be difference if compared to normal feature vectors
+  class1_prev <- c(-10, -10)
+  class2_prev <- c(-10, -10)
+  class3_prev <- c(-10, -10)
+  iterations <- 0
+  
+  df1 <- data.frame(class1_prev = class1_prev, class1 = class1)
+  df2 <- data.frame(class2_prev = class2_prev, class2 = class1)
+  df3 <- data.frame(class3_prev = class3_prev, class3 = class1)
+  
+  while (iterations<20 & dist(df1, method = "Euclidean") < 0.1 & dist(df2, method = "Euclidean") < 0.1 & dist(df3, method = "Euclidean") < 0.1) {
+  
+  #classify all points (nearest neighbor)
+   for (i in 1:dim(numeric_data)[1]) {
+     
+    #initialize a matrix of the size (3,2) 
+    distance_data <- matrix( nrow = 3, ncol = 2) #[distance class]
+    
+    #set the class numbers (1,2,3) to the second column
+    distance_data[,2] <- c(1, 2, 3)
+    
+    #todo: compute distances to all mean vectors and set them in the first column of distance_data
+    distance_data[,1] <- ((dist(rbind(numeric_data[i,], feature_vector1), dist(rbind(numeric_data[i,], feature_vector2), dist(rbind(numeric_data[i,], feature_vector3))))))
+
+    #find the closest feature vector
+    #todo: order the matrix in ascending order (shortest distance first) and read the closest class (the first element in column 2)
+    ascending_distance <- distance_data[order(distance_data[, 1]), ]
+
+    #todo: according to the closest mean vector, set the final class to classification_data. You can find the class from the second column.
+    classification_data[i, 4] <- ascending_distance[1,2]  
+
+   } #end of for
+  
+  #store previous round
+   class1_prev <- class1
+   class2_prev <- class2
+   class3_prev <- class3
+   
+  
+  #todo: make a new matrix in which you store only those points that belong to class 1
+    
+   class1_data <- matrix(classification_data[classification_data[,4] == 1,])
+
+
+   #compute new feature vector for class 1
+     #notice data type change and normalization
+   class1[1] <- mean(as.numeric(class1_data[, 2])/normalize1)
+   class1[2] <- mean(as.numeric(class1_data[, 3])/normalize2)
+  
+   #todo: make a new matrix in which you store only those points that belong to class 2
+   class2_data <- matrix(classification_data[classification_data[,4] == 2,])
+   
+   #compute new feature vector for class 2
+   #notice data type change and normalization
+   class2[1] <- mean(as.numeric(class2_data[, 2])/normalize1)
+   class2[2] <- mean(as.numeric(class2_data[, 3])/normalize2)
+  
+   #todo: make a new matrix in which you store only those points that belong to class 3
+   class3_data <- matrix(classification_data[classification_data[,4] == 3,])
+   
+   #compute new feature vector for class 3
+   #notice data type change and normalization
+   class3[1] <- mean(as.numeric(class3_data[, 2])/normalize1)
+   class3[2] <- mean(as.numeric(class3_data[, 3])/normalize2)
+
+   #increment iteration index  
+   iterations <- iterations + 1
+
+   #make visualization of the results of this iteration round 
+   visualize_classification_and_mean_vectors(classification_data, class1 * denormalize, class2 * denormalize, class3 * denormalize)
+
+  #in order to visualize data, ptop executng until enter is pressed
+   cat ("Press [enter] to continue")
+   line <- readline()
+  }
+
+  print_results(classification_data)
+  visualize_classification(classification_data)
+  return(1)
+}
+
+
+
+
+
