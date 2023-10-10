@@ -154,11 +154,11 @@ kmeans <- function() {
   class3_prev <- c(-10, -10)
   iterations <- 0
   
-  df1 <- data.frame(class1_prev = class1_prev, class1 = class1)
-  df2 <- data.frame(class2_prev = class2_prev, class2 = class1)
-  df3 <- data.frame(class3_prev = class3_prev, class3 = class1)
+  #df1 <- data.frame(class1_prev = class1_prev, class1 = class1)
+  #df2 <- data.frame(class2_prev = class2_prev, class2 = class1)
+  #df3 <- data.frame(class3_prev = class3_prev, class3 = class1)
   
-  while (iterations<20 & dist(df1, method = "Euclidean")[1] < 0.1 & dist(df2, method = "Euclidean")[1] < 0.1 & dist(df3, method = "Euclidean")[1] < 0.1) {
+  while (iterations<20 & abs(sqrt(sum((class1_prev - class1)^2))) < 0.1 & abs(sqrt(sum((class2_prev - class2)^2))) < 0.1 & abs(sqrt(sum((class3_prev - class3)^2))) < 0.1) {
   
   #classify all points (nearest neighbor)
    for (i in 1:dim(numeric_data)[1]) {
