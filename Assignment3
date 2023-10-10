@@ -130,11 +130,16 @@ kmeans <- function() {
   #use minimum, maximum and average values of data
   #create separate vectors for each feature vector (mim/max_average of feature1, mim/max_average of feature2)
   
-  feature_vector1 <- c(min(numeric_data[,1]), min(numeric_data[,2]))
-  feature_vector2 <- c(max(numeric_data[,1]), max(numeric_data[,2]))
-  feature_vector3 <- c(mean(numeric_data[,1]), mean(numeric_data[,2]))
+  #feature_vector1 <- c(min(numeric_data[,1]), min(numeric_data[,2]))
+  #feature_vector2 <- c(max(numeric_data[,1]), max(numeric_data[,2]))
+  #feature_vector3 <- c(mean(numeric_data[,1]), mean(numeric_data[,2]))c
   
+  #Oikea tapa?
   
+  class1 <- c(min(numeric_data[,1]), min(numeric_data[,2]))
+  class2 <- c(max(numeric_data[,1]), max(numeric_data[,2]))
+  class3 <- c(mean(mean(c(max(numeric_data[,1], min(numeric_data[,1]))))), mean(c(max(numeric_data[,2], min(numeric_data[,2])))))
+    
   #visualize denormalzed initial feature vectors of class centers  
   visualize_classification_and_mean_vectors(classification_data, class1 * denormalize, class2 * denormalize, class3 * denormalize)
   
@@ -153,7 +158,7 @@ kmeans <- function() {
   df2 <- data.frame(class2_prev = class2_prev, class2 = class1)
   df3 <- data.frame(class3_prev = class3_prev, class3 = class1)
   
-  while (iterations<20 & dist(df1, method = "Euclidean") < 0.1 & dist(df2, method = "Euclidean") < 0.1 & dist(df3, method = "Euclidean") < 0.1) {
+  while (iterations<20 & dist(df1, method = "Euclidean")[1] < 0.1 & dist(df2, method = "Euclidean")[1] < 0.1 & dist(df3, method = "Euclidean")[1] < 0.1) {
   
   #classify all points (nearest neighbor)
    for (i in 1:dim(numeric_data)[1]) {
