@@ -138,7 +138,7 @@ kmeans <- function() {
   
   class1 <- c(min(numeric_data[,1]), min(numeric_data[,2]))
   class2 <- c(max(numeric_data[,1]), max(numeric_data[,2]))
-  class3 <- c(mean(mean(c(max(numeric_data[,1], min(numeric_data[,1]))))), mean(c(max(numeric_data[,2], min(numeric_data[,2])))))
+  class3 <- c((max(numeric_data[,1]) + min(numeric_data[,1])) / 2, (max(numeric_data[,2]) + min(numeric_data[,2]) / 2))
     
   #visualize denormalzed initial feature vectors of class centers  
   visualize_classification_and_mean_vectors(classification_data, class1 * denormalize, class2 * denormalize, class3 * denormalize)
