@@ -157,8 +157,9 @@ kmeans <- function() {
   #df1 <- data.frame(class1_prev = class1_prev, class1 = class1)
   #df2 <- data.frame(class2_prev = class2_prev, class2 = class1)
   #df3 <- data.frame(class3_prev = class3_prev, class3 = class1)
+  flag <- 0
   
-  while (iterations<20 && abs(sqrt(sum((class1_prev - class1)^2))) < 0.01 && abs(sqrt(sum((class2_prev - class2)^2))) < 0.01 && abs(sqrt(sum((class3_prev - class3)^2))) < 0.01) {
+  while (iterations<20 && flag == 0) {
   
   #classify all points (nearest neighbor)
    for (i in 1:nrow(numeric_data)) {
@@ -170,7 +171,7 @@ kmeans <- function() {
     distance_data[,2] <- c(1, 2, 3)
     
     #todo: compute distances to all mean vectors and set them in the first column of distance_data
-    distance_data[,1] <- ((dist(rbind(numeric_data[i,], feature_vector1), dist(rbind(numeric_data[i,], feature_vector2), dist(rbind(numeric_data[i,], feature_vector3))))))
+    distance_data[,1] <- c(sqrt(sum(as.vector(numeric_data[i,]) - class1)^2), sqrt(sum(as.vector(numeric_data[i,]) - class2)^2), sqrt(sum(as.vector(numeric_data[i,]) - class3)^2))
 
     #find the closest feature vector
     #todo: order the matrix in ascending order (shortest distance first) and read the closest class (the first element in column 2)
@@ -222,6 +223,11 @@ kmeans <- function() {
   #in order to visualize data, ptop executng until enter is pressed
    cat ("Press [enter] to continue")
    line <- readline()
+   
+  #if-loop for checking that distance between iterations
+   if (abs(sqrt(sum((class1_prev - class1)^2))) < 0.01 && abs(sqrt(sum((class2_prev - class2)^2))) < 0.01 && abs(sqrt(sum((class3_prev - class3)^2))) < 0.01) {
+     flag <- 1
+   }
   }
 
   print_results(classification_data)
