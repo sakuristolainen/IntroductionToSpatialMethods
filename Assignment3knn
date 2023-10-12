@@ -158,20 +158,20 @@ knn <- function() {
   
   #todo: complete the following "for" loop to have some index,e.g. "i", that grows from "1" to "number of rows in data matrix" 
   
-  for (i in 1:dim(numeric_data)[1]) {
+  for (i in 1:nrow(classification_data)) {
     
     #todo: initialize a new matrix for computing distances to all training data
     distance_data <- matrix(0, nrow = 6, ncol = 4)
     
     #todo: copy training matrix (three first columns) and leave the fourth column for distances
-    distance_data <- training_data[, c(1,2,3)]
+    distance_data[1:6, 1:3] <- training_data
 
     
     #compute distances to all training samples and store the value in your distances matrix
     #create a new "for" loop (with a different index than you used in previous "for" loop)
-    for (i in 1:dim(distance_data)[1]) {
+    for (j in 1:nrow(distance_data)) {
       
-      distance_data[i, 4] <- (sqrt(sum(as.vector(numeric_data[i,]) - as.vector(training_data[i,1:2])^2)))
+      distance_data[j, 4] <- (sqrt(abs(sum(as.vector(numeric_data[j,]) - as.vector(training_data[j,1:2])^2))))
     }
      #todo: sort data in ascending order according to distances
     
@@ -184,18 +184,22 @@ knn <- function() {
     class_counts <- table(first_three)
 
      #todo: compute which class occurs the most within three shortest distances
-    frequent_class <- names(class_count)[which.max(first_three)]
+    frequent_class <- names(class_counts)[which.max(first_three)]
 
 
      #todo: make an "if" statement in which you check that there is two hits from the winner class
      #if there is one hit from each three classes, set the class to zero (null class)
      #you may also try what kind of result you get if all cases are classified
      #todo: within "if" statement, pick the winner class (most frequent) and store it to the "classification_data" (4th column) 
-    if (class_counts[frequent_class] <= 2){
-      ascending_distance(ascending_distance[1:3, 3]) <- NA
-    
-      classification_data[, 4] <- frequent_class
-    } 
+    if (class_counts[frequent_class] >= 2){
+
+      classification_data[i, 4] <- frequent_class
+      
+    } else {
+      
+      ascending_distance[1:3, 3] <- NA
+      
+    }
     
       
   } #end of "for" loop
