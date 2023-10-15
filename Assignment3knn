@@ -171,7 +171,7 @@ knn <- function() {
     #create a new "for" loop (with a different index than you used in previous "for" loop)
     for (j in 1:nrow(distance_data)) {
       
-      distance_data[j, 4] <- (sqrt(abs(sum(as.vector(numeric_data[j,]) - as.vector(training_data[j,1:2])^2))))
+      distance_data[j, 4] <- (sqrt(abs(sum(as.vector(numeric_data[i,]) - as.vector(training_data[j,1:2])^2))))
     }
      #todo: sort data in ascending order according to distances
     
@@ -180,7 +180,7 @@ knn <- function() {
      #find most frequent class among k shortest (in this case 3) distances
      
      #todo: select three first rows of classes (column 3)
-    first_three <- as.vector(ascending_distance[1:3, 3])
+    first_three <- ascending_distance[1:3, 3]
     class_counts <- table(first_three)
 
      #todo: compute which class occurs the most within three shortest distances
@@ -191,13 +191,13 @@ knn <- function() {
      #if there is one hit from each three classes, set the class to zero (null class)
      #you may also try what kind of result you get if all cases are classified
      #todo: within "if" statement, pick the winner class (most frequent) and store it to the "classification_data" (4th column) 
-    if (class_counts[frequent_class] >= 2){
+    if (class_counts[frequent_class] > 1){
 
       classification_data[i, 4] <- frequent_class
       
     } else {
       
-      ascending_distance[1:3, 3] <- NA
+      ascending_distance[i,4] <- 0
       
     }
     
